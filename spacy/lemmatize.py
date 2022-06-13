@@ -1,13 +1,17 @@
 import csv
 from argparse import ArgumentParser
 
+import chardet
+
 import spacy
 from preprocessing import is_token_allowed
 
 
 def main(version, input_file_path):
     nlp = spacy.load("de_core_news_lg")
-    with open(input_file_path, "r") as f:
+    with open(input_file_path, "rb") as f:
+        encoding = chardet.detect(f.read())["encoding"]
+    with open(input_file_path, "r", encoding=encoding) as f:
         text = f.read()
 
     doc = nlp(text)
