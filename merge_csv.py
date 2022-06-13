@@ -1,4 +1,5 @@
 import os
+from functools import reduce
 
 import chardet
 import pandas as pd
@@ -19,21 +20,12 @@ def main():
             encoding = chardet.detect(f.read())["encoding"]
         dataframes.append(pd.read_csv(filename, encoding=encoding))
 
-    token_dataframes = []
-    for df in dataframes:
-        token_dataframes.append(df.iloc[:, :1])
-        df.drop(df.columns[0], axis=1, inplace=True)
+    # merge dataframes
+    merged = reduce(
+        lambda left, right: pd.merge(left, right, on="token", how="outer"), dataframes
+    ).drop_duplicates()
 
-    # assert all tokens have the same keywords
-    for df in token_dataframes:
-        assert df.columns.tolist() == token_dataframes[0].columns.tolist()
-
-    tokens = token_dataframes[0]
-
-    df = pd.concat(dataframes, axis=1)
-    df = pd.concat([tokens, df], axis=1)
-
-    df.to_csv("./results/merged.csv", index=False)
+    merged.to_csv("./results/merged.csv", index=False)
 
 
 if __name__ == "__main__":
