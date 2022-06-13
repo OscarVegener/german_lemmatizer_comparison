@@ -14,13 +14,15 @@ def main(version, input_file_path):
     with open(input_file_path, "r", encoding=encoding) as f:
         text = f.read()
         words = text.split()
-        
+
     with open(f"../results/spacy_single_word_{version}.csv", "w", newline="") as f:
         writer = csv.writer(f)
         writer.writerow(["token", f"lemma single word {version}"])
         for word in words:
             doc = nlp(word)
-            if is_token_allowed(doc[0], skip_punctuation=True):
+            if is_token_allowed(
+                doc[0], skip_punctuation=True, skip_one_letter_length=True
+            ):
                 writer.writerow([doc[0], doc[0].lemma_.lower()])
 
 

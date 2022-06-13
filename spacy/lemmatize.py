@@ -20,7 +20,9 @@ def main(version, input_file_path):
         writer = csv.writer(f)
         writer.writerow(["token", f"lemma {version}"])
         for token in doc:
-            if is_token_allowed(token, skip_punctuation=True):
+            if is_token_allowed(
+                token, skip_punctuation=True, skip_one_letter_length=True
+            ):
                 writer.writerow([token.text, token.lemma_.lower()])
 
 
